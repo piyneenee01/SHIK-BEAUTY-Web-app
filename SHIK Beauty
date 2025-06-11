@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>SHIK BEAUTY Web App</title>
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>
+import React from "react";
+import ProductList from "./ProductList";
+
+function App() {
+  return (
+    <div>
+      <h1>SHIK BEAUTY PRODUCTS</h1>
+      <ProductList />
+    </div>
+  );
+}
+
+export default App;
+import React, { useEffect, useState } from "react";
+import { db } from "./firebase";
+import { collection, getDocs } from "firebase/firestore";
+
+function ProductList() {
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    async function fetchData() {
+      const querySnapshot = await getDocs(collection(db, "products"));
+      setProducts(querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+    }
+    fetchData();
+  }, []);
+
+  return (
+    <div>
+      {products.map(product => (
+        <div key={product.id}>
+          <h3>{product.name}</h3>
+          <p>{product.description}</p>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+export default ProductList;
+// Replace with your Firebase config!
+import { initializeApp } from "firebase/app";
+import { getFirestore } from "firebase/firestore";
+
+const firebaseConfig = {
+  apiKey: "YOUR_KEY",
+  authDomain: "YOUR_DOMAIN",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_BUCKET",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId: "YOUR_APP_ID"
+};
+
+const app = initializeApp(firebaseConfig);
+export const db = getFirestore(app);
+{
+  "name": "shikbeauty-webapp",
+  "version": "1.0.0",
+  "dependencies": {
+    "firebase": "^10.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-scripts": "5.0.1"
+  },
+  "scripts": {
+    "start": "react-scripts start"
+  }
+}
